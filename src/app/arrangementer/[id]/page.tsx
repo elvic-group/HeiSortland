@@ -156,6 +156,88 @@ export default function EventDetailPage() {
     ...(event.website && { url: event.website }),
   };
 
+  const eventUrl =
+    typeof window !== "undefined"
+      ? window.location.href
+      : `https://heisortland.vercel.app/arrangementer/${event.id}`;
+  const shareText = `${event.title} – ${formatDate(event.date)} kl. ${event.startTime}`;
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(eventUrl);
+      alert("Lenken er kopiert.");
+    } catch {
+      window.prompt("Kopier lenken:", eventUrl);
+    }
+  };
+
+  const openShareUrl = (url: string) => {
+    window.open(url, "_blank", "noopener,noreferrer,width=720,height=640");
+  };
+
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: event.title,
+        text: shareText,
+        url: eventUrl,
+      });
+      return;
+    }
+    await handleCopyLink();
+  };
+
+  const escapeIcsText = (value: string) =>
+    value
+      .replace(/\\/g, "\\\\")
+      .replace(/\n/g, "\\n")
+      .replace(/,/g, "\\,")
+      .replace(/;/g, "\\;");
+
+  const toIcsDate = (dateStr: string, timeStr: string) => {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const date = new Date(`${dateStr}T12:00:00`);
+    date.setHours(hours || 0, minutes || 0, 0, 0);
+    return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  };
+
+  const handleAddToCalendar = () => {
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//HeiSortland//Arrangement//NO",
+      "BEGIN:VEVENT",
+      `UID:${event.id}@heisortland.no`,
+      `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").split(".")[0]}Z`,
+      `DTSTART:${toIcsDate(event.date, event.startTime)}`,
+      `DTEND:${toIcsDate(event.endDate || event.date, event.endTime)}`,
+      `SUMMARY:${escapeIcsText(event.title)}`,
+      `DESCRIPTION:${escapeIcsText(`${event.description}\n\n${eventUrl}`)}`,
+      `LOCATION:${escapeIcsText(event.address || event.location)}`,
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\r\n");
+
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${event.title
+      .toLowerCase()
+      .replace(/[^a-z0-9æøå]+/gi, "-")
+      .replace(/^-|-$/g, "")}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const reportHref = `mailto:post@sortland.kommune.no?subject=${encodeURIComponent(
+    `Meld feil: ${event.title}`,
+  )}&body=${encodeURIComponent(
+    `Hei,\n\nJeg vil melde en feil på dette arrangementet:\n${event.title}\n${eventUrl}\n\nHva er feil:\n`,
+  )}`;
+
   return (
     <div className="min-h-screen bg-warm">
       {/* Structured data */}
@@ -473,7 +555,8 @@ export default function EventDetailPage() {
                 <div className="flex gap-2">
                   <button
                     aria-label="Kopier lenke"
-                    className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-ink hover:border-muted transition-all duration-300"
+                    onClick={handleCopyLink}
+                    className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-accent hover:border-accent/30 transition-all duration-300"
                   >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path
@@ -493,6 +576,11 @@ export default function EventDetailPage() {
                   </button>
                   <button
                     aria-label="Del på Facebook"
+                    onClick={() =>
+                      openShareUrl(
+                        `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(eventUrl)}`,
+                      )
+                    }
                     className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#1877F2] hover:border-[#1877F2]/30 transition-all duration-300"
                   >
                     <svg
@@ -506,6 +594,11 @@ export default function EventDetailPage() {
                   </button>
                   <button
                     aria-label="Del på Twitter"
+                    onClick={() =>
+                      openShareUrl(
+                        `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(eventUrl)}`,
+                      )
+                    }
                     className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#00B2FF] hover:border-[#00B2FF]/30 transition-all duration-300"
                   >
                     <svg
@@ -519,6 +612,11 @@ export default function EventDetailPage() {
                   </button>
                   <button
                     aria-label="Del på WhatsApp"
+                    onClick={() =>
+                      openShareUrl(
+                        `https://wa.me/?text=${encodeURIComponent(`${shareText} ${eventUrl}`)}`,
+                      )
+                    }
                     className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#25D366] hover:border-[#25D366]/30 transition-all duration-300"
                   >
                     <svg
@@ -532,6 +630,7 @@ export default function EventDetailPage() {
                   </button>
                   <button
                     aria-label="Del via andre tjenester"
+                    onClick={handleNativeShare}
                     className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-ink hover:border-muted transition-all duration-300"
                   >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -557,15 +656,21 @@ export default function EventDetailPage() {
 
               {/* Actions */}
               <div className="pt-6 space-y-3">
-                <button className="w-full px-5 py-3 bg-ink text-warm text-xs font-mono uppercase tracking-widest hover:bg-ink/90 transition-colors duration-300">
+                <button
+                  onClick={handleAddToCalendar}
+                  className="w-full px-5 py-3 bg-ink text-warm text-xs font-mono uppercase tracking-widest hover:bg-ink/90 transition-colors duration-300"
+                >
                   Legg til i kalender
                 </button>
                 <div className="w-full px-5 py-3 border border-border bg-white text-ink hover:border-muted transition-colors duration-300 flex items-center justify-center">
                   <SaveButton eventId={event.id} size="md" />
                 </div>
-                <button className="w-full text-center text-xs font-mono uppercase tracking-wider text-muted hover:text-ink transition-colors duration-300 pt-2">
+                <a
+                  href={reportHref}
+                  className="block w-full text-center text-xs font-mono uppercase tracking-wider text-muted hover:text-ink transition-colors duration-300 pt-2"
+                >
                   Meld feil
-                </button>
+                </a>
               </div>
             </div>
           </motion.div>
