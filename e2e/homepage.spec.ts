@@ -15,8 +15,9 @@ test.describe("Hjemmesiden", () => {
   test("Hero-seksjonen inneholder overskrift", async ({ page }) => {
     await page.goto("/");
 
-    const heroHeadline = page.locator("h1").filter({
-      hasText: /finn det som skjer/i,
+    const heroHeadline = page.getByRole("heading", {
+      level: 1,
+      name: /finn det som skjer/i,
     });
     await expect(heroHeadline).toBeVisible();
   });
@@ -52,7 +53,7 @@ test.describe("Hjemmesiden", () => {
     await expect(page).toHaveURL(/\/arrangementer/);
   });
 
-  test('Footer er synlig', async ({ page }) => {
+  test("Footer er synlig", async ({ page }) => {
     await page.goto("/");
 
     const footer = page.locator("footer");

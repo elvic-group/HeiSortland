@@ -98,6 +98,7 @@ export default function Header() {
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  aria-expanded={userMenuOpen}
                   className={`flex items-center gap-2 px-3 py-1.5 transition-colors duration-300 ${navColor}`}
                 >
                   <span className="w-7 h-7 rounded-full bg-accent text-warm text-xs font-semibold flex items-center justify-center">
@@ -187,6 +188,7 @@ export default function Header() {
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden relative w-8 h-8 flex items-center justify-center"
           aria-label="Meny"
+          aria-expanded={menuOpen}
         >
           <div className="flex flex-col gap-1.5">
             <motion.span

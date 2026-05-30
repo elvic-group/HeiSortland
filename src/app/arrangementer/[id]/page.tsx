@@ -119,6 +119,13 @@ export default function EventDetailPage() {
     return d.toISOString();
   };
 
+  // Sanitize string values for safe embedding in JSON-LD script tags
+  const sanitizeJsonLd = (str: string): string =>
+    str
+      .replace(/</g, "\\u003c")
+      .replace(/>/g, "\\u003e")
+      .replace(/&/g, "\\u0026");
+
   const eventStatusMap: Record<string, string> = {
     published: "https://schema.org/EventScheduled",
     cancelled: "https://schema.org/EventCancelled",
@@ -129,8 +136,8 @@ export default function EventDetailPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Event",
-    name: event.title,
-    description: event.description,
+    name: sanitizeJsonLd(event.title),
+    description: sanitizeJsonLd(event.description),
     startDate: buildIsoDate(event.date, event.startTime),
     endDate: buildIsoDate(event.endDate || event.date, event.endTime),
     eventStatus:
@@ -138,12 +145,12 @@ export default function EventDetailPage() {
     isAccessibleForFree: event.isFree,
     location: {
       "@type": "Place",
-      name: event.location,
-      address: event.address || event.location,
+      name: sanitizeJsonLd(event.location),
+      address: sanitizeJsonLd(event.address || event.location),
     },
     organizer: {
       "@type": "Organization",
-      name: event.organizerName,
+      name: sanitizeJsonLd(event.organizerName),
     },
     ...(event.image && { image: event.image }),
     ...(event.website && { url: event.website }),
@@ -234,7 +241,7 @@ export default function EventDetailPage() {
                   height="14"
                   viewBox="0 0 14 14"
                   fill="none"
-                  className="text-white/50"
+                  className="text-white/65"
                 >
                   <rect
                     x="1.5"
@@ -266,7 +273,7 @@ export default function EventDetailPage() {
                   height="14"
                   viewBox="0 0 14 14"
                   fill="none"
-                  className="text-white/50"
+                  className="text-white/65"
                 >
                   <circle
                     cx="7"
@@ -290,7 +297,7 @@ export default function EventDetailPage() {
                   height="14"
                   viewBox="0 0 14 14"
                   fill="none"
-                  className="text-white/50"
+                  className="text-white/65"
                 >
                   <path
                     d="M7 1C4.2 1 2 3.2 2 6C2 9.5 7 13 7 13C7 13 12 9.5 12 6C12 3.2 9.8 1 7 1Z"

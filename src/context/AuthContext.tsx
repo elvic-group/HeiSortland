@@ -78,10 +78,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(mapUser(session?.user ?? null));
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setUser(mapUser(session?.user ?? null));
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
 
     // Listen for auth changes
     const {
@@ -146,10 +149,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, [supabaseEnabled]);
 
-  const updateUser = useCallback((data: Partial<HeiUser>) => {
-    if (!user) return;
-    setUser((prev) => (prev ? { ...prev, ...data } : null));
-  }, []);
+  const updateUser = useCallback(
+    (data: Partial<HeiUser>) => {
+      if (!user) return;
+      setUser((prev) => (prev ? { ...prev, ...data } : null));
+    },
+    [user],
+  );
 
   return (
     <AuthContext.Provider

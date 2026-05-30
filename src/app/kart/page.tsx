@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { events, formatDate } from "@/data/sample";
+import { useEvents } from "@/hooks/useEvents";
 import { usePlaces } from "@/hooks/usePlaces";
 import { mapDbEventToEventData } from "@/lib/map-db";
+import { formatDate } from "@/lib/map-db";
 import { SkeletonGrid } from "@/components/Skeleton";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -88,10 +89,16 @@ export default function KartPage() {
     reload: reloadPlaces,
   } = usePlaces();
 
-  const approvedEvents = events.filter((e) => e.status === "approved");
+  const {
+    events: dbEvents,
+    loading: eventsLoading,
+    error: eventsError,
+    reload: reloadEvents,
+  } = useEvents();
+
   const mappedEvents = useMemo(
-    () => approvedEvents.map((e) => ({ ...e })), // use sample data as-is
-    [approvedEvents],
+    () => dbEvents.map(mapDbEventToEventData),
+    [dbEvents],
   );
 
   return (
@@ -166,35 +173,75 @@ export default function KartPage() {
 
               {/* Event list */}
               {activeTab === "events" && (
-                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
-                  {mappedEvents.map((event) => (
-                    <motion.div
-                      key={event.id}
-                      variants={fadeUp}
-                      className="p-4 border border-border bg-white hover:border-accent/30 transition-colors"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="text-accent mt-0.5 flex-shrink-0">
-                          {icons.arrangement}
-                        </span>
-                        <div className="min-w-0">
-                          <Link
-                            href={`/arrangementer/${event.id}`}
-                            className="text-sm font-serif text-ink hover:text-accent transition-colors line-clamp-1"
-                          >
-                            {event.title}
-                          </Link>
-                          <p className="text-xs text-muted mt-1">
-                            {formatDate(event.date)} · {event.startTime}
-                          </p>
-                          <p className="text-xs text-muted mt-0.5 line-clamp-1">
-                            {event.location}
-                          </p>
-                        </div>
+                <>
+                  {eventsLoading ? (
+                    <SkeletonGrid count={4} variant="place" />
+                  ) : eventsError ? (
+                    <div className="text-center py-12">
+                      <div className="w-10 h-10 mx-auto mb-3 rounded-full bg-border/50 flex items-center justify-center">
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="text-muted"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            opacity="0.3"
+                          />
+                          <path
+                            d="M12 8V12M12 16H12.01"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                          />
+                        </svg>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                      <p className="text-muted text-xs mb-4">{eventsError}</p>
+                      <button
+                        onClick={reloadEvents}
+                        className="inline-block px-5 py-2.5 bg-ink text-warm text-[10px] font-mono uppercase tracking-widest hover:bg-ink/90 transition-colors"
+                      >
+                        Prøv igjen
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                      {mappedEvents.map((event) => (
+                        <motion.div
+                          key={event.id}
+                          variants={fadeUp}
+                          className="p-4 border border-border bg-white hover:border-accent/30 transition-colors"
+                        >
+                          <div className="flex items-start gap-3">
+                            <span className="text-accent mt-0.5 flex-shrink-0">
+                              {icons.arrangement}
+                            </span>
+                            <div className="min-w-0">
+                              <Link
+                                href={`/arrangementer/${event.id}`}
+                                className="text-sm font-serif text-ink hover:text-accent transition-colors line-clamp-1"
+                              >
+                                {event.title}
+                              </Link>
+                              <p className="text-xs text-muted mt-1">
+                                {formatDate(event.date)} · {event.startTime}
+                              </p>
+                              <p className="text-xs text-muted mt-0.5 line-clamp-1">
+                                {event.location}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
 
               {/* Places list */}
@@ -304,7 +351,7 @@ export default function KartPage() {
               <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="p-4 border border-border bg-white text-center">
                   <p className="font-serif text-2xl text-ink">
-                    {approvedEvents.length}
+                    {eventsLoading ? "..." : mappedEvents.length}
                   </p>
                   <p className="text-xs text-muted mt-1 font-mono uppercase tracking-wider">
                     Arrangementer
@@ -320,7 +367,9 @@ export default function KartPage() {
                 </div>
                 <div className="p-4 border border-border bg-white text-center">
                   <p className="font-serif text-2xl text-ink">
-                    {approvedEvents.filter((e) => e.isFree).length}
+                    {eventsLoading
+                      ? "..."
+                      : mappedEvents.filter((e) => e.isFree).length}
                   </p>
                   <p className="text-xs text-muted mt-1 font-mono uppercase tracking-wider">
                     Gratis

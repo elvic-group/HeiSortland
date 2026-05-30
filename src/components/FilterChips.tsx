@@ -16,6 +16,7 @@ export default function FilterChips({ activeFilter, onFilter }: Props) {
           <button
             key={f.id}
             onClick={() => onFilter(isActive ? null : f.id)}
+            aria-pressed={isActive}
             className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 whitespace-nowrap ${
               isActive
                 ? "bg-ink text-warm border-ink"

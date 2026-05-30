@@ -15,10 +15,17 @@ export default function UpdatePasswordPage() {
   const [hasSession, setHasSession] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getSession().then(({ data }) => {
-      setHasSession(!!data.session);
-    });
+    try {
+      const supabase = createClient();
+      supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          setHasSession(!!data.session);
+        })
+        .catch(() => setHasSession(false));
+    } catch {
+      setHasSession(false);
+    }
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +68,8 @@ export default function UpdatePasswordPage() {
             Ugyldig lenke
           </h1>
           <p className="text-muted text-sm mb-6">
-            Lenken er ugyldig eller har utløpt. Be om en ny tilbakestillingslenke.
+            Lenken er ugyldig eller har utløpt. Be om en ny
+            tilbakestillingslenke.
           </p>
           <Link
             href="/tilbakestill-passord"
@@ -85,9 +93,7 @@ export default function UpdatePasswordPage() {
           <h1 className="font-serif text-3xl md:text-4xl text-ink">
             Nytt passord
           </h1>
-          <p className="mt-2 text-muted text-sm">
-            Skriv inn ditt nye passord.
-          </p>
+          <p className="mt-2 text-muted text-sm">Skriv inn ditt nye passord.</p>
         </div>
 
         {success ? (

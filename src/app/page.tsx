@@ -143,7 +143,7 @@ export default function Home() {
           >
             <motion.span
               variants={fadeUp}
-              className="inline-block text-xs font-mono uppercase tracking-[0.2em] text-white/40 mb-4"
+              className="inline-block text-xs font-mono uppercase tracking-[0.2em] text-white/60 mb-4"
             >
               Sortland, Vesterålen
             </motion.span>
@@ -159,7 +159,7 @@ export default function Home() {
 
             <motion.p
               variants={fadeUp}
-              className="mt-5 text-base sm:text-lg text-white/55 leading-relaxed max-w-xl"
+              className="mt-5 text-base sm:text-lg text-white/65 leading-relaxed max-w-xl"
             >
               Arrangementer, aktiviteter, møteplasser, tjenester og lokale
               tilbud – samlet på ett sted.
@@ -451,35 +451,37 @@ export default function Home() {
           variants={fadeUp}
           className="relative z-10 max-w-2xl mx-auto px-6 md:px-12 py-20 md:py-28 text-center"
         >
-          <span className="inline-block text-xs font-mono uppercase tracking-[0.2em] text-white/30 mb-4">
+          <span className="inline-block text-xs font-mono uppercase tracking-[0.2em] text-white/50 mb-4">
             Nyhetsbrev
           </span>
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold text-warm leading-tight">
             Få ukens aktiviteter på e-post
           </h2>
-          <p className="mt-4 text-white/40 text-base md:text-lg max-w-md mx-auto leading-relaxed">
+          <p className="mt-4 text-white/60 text-base md:text-lg max-w-md mx-auto leading-relaxed">
             Motta en ukentlig oversikt over hva som skjer i Sortland.
           </p>
 
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="mt-10 flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
+            className="mt-10 flex flex-col sm:flex-row gap-3 max-w-lg mx-auto opacity-60"
           >
             <input
               type="email"
+              disabled
               aria-label="E-postadresse for nyhetsbrev"
               placeholder="din@epost.no"
-              className="flex-1 px-5 py-4 bg-white/5 border border-white/10 text-warm placeholder:text-white/20 text-sm focus:outline-none focus:border-white/30 transition-colors"
+              className="flex-1 px-5 py-4 bg-white/5 border border-white/10 text-warm placeholder:text-white/40 text-sm transition-colors cursor-not-allowed"
             />
             <button
               type="submit"
-              className="px-8 py-4 bg-accent text-warm text-xs font-semibold uppercase tracking-widest hover:bg-accent/90 transition-colors shrink-0"
+              disabled
+              className="px-8 py-4 bg-accent text-warm text-xs font-semibold uppercase tracking-widest transition-colors shrink-0 cursor-not-allowed"
             >
-              Meld på
+              Kommer snart
             </button>
           </form>
 
-          <p className="mt-4 text-[11px] text-white/15">
+          <p className="mt-4 text-[11px] text-white/35">
             Ingen spam. Kun én e-post i uka. Du kan melde deg av når som helst.
           </p>
         </motion.div>

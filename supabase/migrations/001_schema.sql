@@ -143,6 +143,13 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
+-- Performance indexes
+CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);
+CREATE INDEX IF NOT EXISTS idx_events_date ON events(date);
+CREATE INDEX IF NOT EXISTS idx_events_category ON events(category);
+CREATE INDEX IF NOT EXISTS idx_events_organizer ON events(organizer_id);
+CREATE INDEX IF NOT EXISTS idx_places_type ON places(type);
+
 -- Seed categories
 INSERT INTO categories (id, label, description, gradient) VALUES
   ('arrangementer', 'Arrangementer', 'Konserter, festivaler, markeder og mer', 'from-accent to-accent/60'),

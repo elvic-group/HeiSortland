@@ -27,9 +27,10 @@ export default function SearchBar({
         placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className={`w-full bg-white border border-border text-ink placeholder:text-muted/50 focus:outline-none focus:border-ink transition-colors duration-300 ${
+        className={`w-full bg-white border border-border text-ink placeholder:text-muted/60 focus:outline-none focus:border-ink transition-colors duration-300 ${
           large ? "pl-6 pr-16 py-5 text-base" : "pl-5 pr-14 py-3.5 text-sm"
         }`}
+        aria-label="Søk etter arrangementer"
       />
       <button
         type="submit"

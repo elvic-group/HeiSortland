@@ -50,6 +50,7 @@ export default function PlaceCard({ place }: Props) {
               viewBox="0 0 12 12"
               fill="none"
               className="text-muted/50 shrink-0"
+              aria-hidden="true"
             >
               <path
                 d="M6 1C3.8 1 2 2.8 2 5C2 8 6 11 6 11C6 11 10 8 10 5C10 2.8 8.2 1 6 1Z"
@@ -68,6 +69,7 @@ export default function PlaceCard({ place }: Props) {
                 viewBox="0 0 12 12"
                 fill="none"
                 className="text-muted/50 shrink-0"
+                aria-hidden="true"
               >
                 <path
                   d="M2.5 1.5L4.5 1L5.5 3.5L4 4.5C4.5 5.5 5.5 6.5 6.5 7L7.5 5.5L10 6.5L9.5 8.5C9.5 8.5 8 10 6.5 10C4.5 10 2 7.5 2 5.5C2 4 3.5 2.5 3.5 2.5L2.5 1.5Z"

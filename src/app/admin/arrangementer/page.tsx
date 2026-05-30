@@ -286,10 +286,18 @@ function AdminArrangementerContent() {
                                     </button>
                                   </>
                                 )}
-                                <button className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest border border-border text-muted hover:text-ink hover:border-ink/30 transition-colors">
+                                <button
+                                  disabled
+                                  title="Kommer snart"
+                                  className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest border border-border text-muted/40 cursor-not-allowed transition-colors"
+                                >
                                   Rediger
                                 </button>
-                                <button className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest text-error/60 hover:text-error transition-colors">
+                                <button
+                                  disabled
+                                  title="Kommer snart"
+                                  className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest text-error/20 cursor-not-allowed transition-colors"
+                                >
                                   Slett
                                 </button>
                               </div>

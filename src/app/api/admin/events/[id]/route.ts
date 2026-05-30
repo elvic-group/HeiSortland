@@ -16,6 +16,17 @@ export async function PATCH(
     return NextResponse.json({ error: "Ikke autorisert" }, { status: 401 });
   }
 
+  // Double-check against profiles table (user_metadata can be spoofed)
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.role !== "admin") {
+    return NextResponse.json({ error: "Ikke autorisert" }, { status: 401 });
+  }
+
   const { id } = await params;
   const body = await request.json();
   const { status } = body;

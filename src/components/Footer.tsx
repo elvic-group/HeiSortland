@@ -42,7 +42,7 @@ export default function Footer() {
             >
               Hei<span className="text-accent">.</span> Sortland
             </Link>
-            <p className="mt-4 text-white/40 text-sm leading-relaxed max-w-xs">
+            <p className="mt-4 text-white/60 text-sm leading-relaxed max-w-xs">
               Finn det som skjer i Sortland. Arrangementer, aktiviteter,
               møteplasser og lokale tilbud – samlet på ett sted.
             </p>
@@ -58,7 +58,7 @@ export default function Footer() {
                   <li key={item.label}>
                     <Link
                       href={item.href}
-                      className="text-white/60 hover:text-warm text-sm transition-colors duration-300"
+                      className="text-white/75 hover:text-warm text-sm transition-colors duration-300"
                     >
                       {item.label}
                     </Link>
@@ -70,10 +70,10 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-white/30 text-xs">
+          <p className="text-white/50 text-xs">
             &copy; {new Date().getFullYear()} Hei Sortland
           </p>
-          <p className="text-white/20 text-xs font-mono">
+          <p className="text-white/40 text-xs font-mono">
             Med &hearts; fra Vesterålen
           </p>
         </div>

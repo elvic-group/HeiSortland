@@ -17,7 +17,14 @@ export default function ResetPasswordPage() {
     setSubmitting(true);
 
     try {
-      const supabase = createClient();
+      let supabase;
+      try {
+        supabase = createClient();
+      } catch {
+        setError("Autentisering er ikke konfigurert.");
+        setSubmitting(false);
+        return;
+      }
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(
         email,
         {
@@ -61,9 +68,9 @@ export default function ResetPasswordPage() {
             className="p-8 border border-sage/30 text-center"
           >
             <p className="text-ink text-sm leading-relaxed">
-              Hvis det finnes en konto med denne e-postadressen, har vi sendt
-              en lenke for å lage nytt passord. Sjekk innboksen din
-              (og søppelpostmappen).
+              Hvis det finnes en konto med denne e-postadressen, har vi sendt en
+              lenke for å lage nytt passord. Sjekk innboksen din (og
+              søppelpostmappen).
             </p>
             <Link
               href="/logg-inn"
