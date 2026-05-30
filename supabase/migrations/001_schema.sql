@@ -81,6 +81,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Profiles: users can read all, update their own
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow trigger to insert profiles" ON profiles FOR INSERT WITH CHECK (true);
 CREATE POLICY "Profiles are viewable by everyone" ON profiles FOR SELECT USING (true);
 CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
 
