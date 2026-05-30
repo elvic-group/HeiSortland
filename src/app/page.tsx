@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import SearchBar from "@/components/SearchBar";
 import FilterChips from "@/components/FilterChips";
@@ -127,11 +128,23 @@ export default function Home() {
     <>
       {/* ─── HERO ─── */}
       <section className="relative min-h-[760px] md:min-h-[820px] flex items-center bg-navy overflow-hidden">
+        {/* Hero image */}
+        <Image
+          src="/hero-sortland.jpg"
+          alt="Fjord og fjellandskap i Vesterålen"
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-navy/55" />
+        <div className="absolute inset-0 bg-gradient-to-r from-navy/85 via-navy/55 to-navy/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
+
         {/* Decorative background shapes */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-accent/5 blur-3xl" />
-          <div className="absolute bottom-1/3 -right-40 w-[30rem] h-[30rem] rounded-full bg-sage/5 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(ellipse_at_center,_rgba(217,88,59,0.03)_0%,_transparent_60%)]" />
+          <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute bottom-1/3 -right-40 w-[30rem] h-[30rem] rounded-full bg-sage/10 blur-3xl" />
         </div>
 
         <div className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 pt-28 pb-20 md:pt-32 md:pb-24">
