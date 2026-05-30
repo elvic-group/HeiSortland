@@ -8,10 +8,10 @@ import { useAuth } from "@/context/AuthContext";
 import LanguageSwitcher from "@/i18n/LanguageSwitcher";
 
 const navLinks = [
-  { label: "Hva skjer", href: "/arrangementer" },
+  { label: "Utforsk", href: "/arrangementer" },
   { label: "Kategorier", href: "/kategorier" },
   { label: "Steder", href: "/steder" },
-  { label: "Ny i Sortland", href: "/ny-i-sortland" },
+  { label: "For arrangører", href: "/arrangor" },
 ];
 
 export default function Header() {
@@ -63,10 +63,10 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${headerSurface}`}
     >
-      <nav className="flex items-center justify-between px-6 md:px-12 h-18 max-w-7xl mx-auto">
+      <nav className="flex items-center justify-between px-6 md:px-12 h-16 md:h-20 max-w-7xl mx-auto">
         <Link
           href="/"
-          className={`font-serif text-xl md:text-2xl font-semibold tracking-tight transition-colors duration-500 ${logoColor}`}
+          className={`font-serif text-2xl md:text-3xl font-semibold tracking-tight transition-colors duration-500 ${logoColor}`}
         >
           Hei<span className="text-accent">.</span> Sortland
         </Link>
@@ -88,7 +88,7 @@ export default function Header() {
           <li>
             <Link
               href="/legg-til"
-              className="text-sm font-semibold px-4 py-2 bg-accent text-white hover:bg-accent/90 transition-colors duration-300"
+              className="text-sm font-semibold px-5 py-2 bg-accent text-white hover:bg-accent/90 transition-colors duration-300 rounded-sm"
             >
               Legg inn
             </Link>
@@ -221,7 +221,7 @@ export default function Header() {
                   <Link
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className="text-lg font-medium text-muted hover:text-ink transition-colors"
+                    className="text-xl font-medium text-muted hover:text-ink transition-colors"
                   >
                     {link.label}
                   </Link>

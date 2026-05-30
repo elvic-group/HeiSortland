@@ -14,9 +14,9 @@ export default function EventCard({ event }: Props) {
     : eventImages[event.id];
 
   return (
-    <div className="group block border border-border bg-white hover:border-muted/30 transition-colors duration-300 relative">
+    <div className="group block border border-navy/8 bg-white hover:shadow-md hover:-translate-y-0.5 hover:border-accent/30 transition-all duration-300 relative">
       <Link href={`/arrangementer/${event.id}`} className="block">
-        <div className="relative overflow-hidden aspect-[16/10] bg-navy">
+        <div className="relative overflow-hidden aspect-[4/3] bg-navy">
           {imgSrc ? (
             <Image
               src={imgSrc}
@@ -31,38 +31,38 @@ export default function EventCard({ event }: Props) {
             />
           )}
           {/* Gradient overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-navy/10 to-transparent" />
 
-          {event.isFree && (
-            <span className="absolute top-3 left-3 z-10 px-2.5 py-1 bg-sage text-warm text-[10px] font-mono uppercase tracking-widest">
-              Gratis
-            </span>
-          )}
-          {event.featured && !event.isFree && (
-            <span className="absolute top-3 left-3 z-10 px-2.5 py-1 bg-accent text-warm text-[10px] font-mono uppercase tracking-widest">
-              Anbefalt
-            </span>
-          )}
-          <div className="absolute top-3 right-3 z-10 flex items-center gap-3">
-            <span className="text-white/65 text-[10px] font-mono">
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-2 flex-wrap">
+            <span className="bg-accent text-white text-xs px-2.5 py-1">
               {event.categoryLabel}
             </span>
+            {event.isFree && (
+              <span className="bg-sage text-warm text-xs px-2.5 py-1">
+                Gratis
+              </span>
+            )}
+            {event.featured && !event.isFree && (
+              <span className="bg-accent text-warm text-xs px-2.5 py-1">
+                Anbefalt
+              </span>
+            )}
           </div>
         </div>
-        <div className="p-5">
-          <p className="text-xs font-mono text-accent uppercase tracking-wider mb-1.5">
+        <div className="p-5 md:p-6">
+          <p className="text-base text-ink/80 mb-2">
             {formatDate(event.date)} · {event.startTime}
           </p>
-          <h3 className="font-serif text-xl text-ink group-hover:text-accent transition-colors duration-300 line-clamp-2">
+          <h3 className="font-serif text-xl md:text-2xl text-ink group-hover:text-accent transition-colors duration-300 leading-tight line-clamp-2">
             {event.title}
           </h3>
-          <p className="mt-2 text-sm text-muted leading-relaxed line-clamp-2">
+          <p className="mt-2 text-sm md:text-base text-muted leading-relaxed line-clamp-2">
             {event.shortDescription}
           </p>
-          <div className="mt-3 flex items-center gap-2 text-xs text-muted">
+          <div className="mt-4 flex items-center gap-2 text-sm text-muted">
             <svg
-              width="12"
-              height="12"
+              width="14"
+              height="14"
               viewBox="0 0 12 12"
               fill="none"
               className="text-muted/50 shrink-0"

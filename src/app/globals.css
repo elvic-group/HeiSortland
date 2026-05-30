@@ -21,12 +21,36 @@
 @layer base {
     html {
         scroll-behavior: smooth;
+        font-size: 17px;
+    }
+
+    @media (min-width: 768px) {
+        html {
+            font-size: 18px;
+        }
+    }
+
+    h1 {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        line-height: 1.08;
+    }
+
+    h2 {
+        font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+        line-height: 1.15;
+    }
+
+    h3 {
+        font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+        line-height: 1.25;
     }
 
     body {
         background-color: var(--color-warm);
         color: var(--color-ink);
         font-family: var(--font-sans);
+        font-size: 1rem;
+        line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
