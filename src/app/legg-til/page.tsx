@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { createEvent, uploadEventImage } from "@/data/db";
+import { useToast } from "@/components/Toast";
 
 interface FormData {
   title: string;
@@ -62,10 +63,10 @@ const labelClass = "block text-xs font-medium text-muted mb-2";
 export default function LeggTilPage() {
   const { user } = useAuth();
   const [form, setForm] = useState<FormData>(initialState);
-  const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -107,7 +108,6 @@ export default function LeggTilPage() {
     try {
       const selectedCategory = categories.find((c) => c.id === form.category);
 
-      // Upload image if provided
       let imageUrl = "";
       if (form.imageFile) {
         imageUrl = await uploadEventImage(form.imageFile);
@@ -134,73 +134,20 @@ export default function LeggTilPage() {
         suitable_for: form.suitableFor,
       });
 
-      setSubmitted(true);
+      toast("Arrangementet er sendt inn!", "success");
+      setForm(initialState);
+      setError(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Noe gikk galt. Prøv igjen.",
-      );
+      const message =
+        err instanceof Error ? err.message : "Noe gikk galt. Prøv igjen.";
+      setError(message);
+      toast(message, "error");
     } finally {
       setSubmitting(false);
     }
   };
-
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-warm flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          className="max-w-lg mx-auto px-6 text-center pt-28 pb-20"
-        >
-          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-sage/20 flex items-center justify-center">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 28 28"
-              fill="none"
-              className="text-sage"
-            >
-              <path
-                d="M8 14L12 18L20 10"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <h1 className="font-serif text-3xl md:text-4xl text-ink leading-tight">
-            Arrangementet er sendt inn
-          </h1>
-          <p className="mt-4 text-muted leading-relaxed">
-            Arrangementet er sendt inn og venter på godkjenning. Vi gir deg
-            beskjed når det er publisert.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/"
-              className="px-6 py-3 bg-ink text-warm text-sm font-mono uppercase tracking-widest hover:bg-ink/90 transition-colors"
-            >
-              Til forsiden
-            </Link>
-            <button
-              onClick={() => {
-                setSubmitted(false);
-                setForm(initialState);
-                setError(null);
-                if (fileInputRef.current) fileInputRef.current.value = "";
-              }}
-              className="px-6 py-3 border border-navy/15 text-muted text-sm font-mono uppercase tracking-widest hover:text-ink hover:border-navy/30 transition-colors"
-            >
-              Legg til et til
-            </button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-warm">

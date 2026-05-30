@@ -2,6 +2,7 @@ import { EventData, formatDate } from "@/data/sample";
 import { eventImages } from "@/data/images";
 import Image from "next/image";
 import Link from "next/link";
+import SaveButton from "@/components/SaveButton";
 
 interface Props {
   event: EventData;
@@ -44,16 +45,19 @@ export default function EventCard({ event }: Props) {
             Anbefalt
           </span>
         )}
-        <div className="absolute top-3 right-3 z-10">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-3">
           <span className="text-white/50 text-[10px] font-mono">
             {event.categoryLabel}
           </span>
         </div>
       </div>
       <div className="p-5">
-        <p className="text-xs font-mono text-accent uppercase tracking-wider mb-1.5">
-          {formatDate(event.date)} · {event.startTime}
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-xs font-mono text-accent uppercase tracking-wider mb-1.5">
+            {formatDate(event.date)} · {event.startTime}
+          </p>
+          <SaveButton eventId={event.id} size="sm" />
+        </div>
         <h3 className="font-serif text-xl text-ink group-hover:text-accent transition-colors duration-300 line-clamp-2">
           {event.title}
         </h3>

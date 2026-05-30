@@ -12,7 +12,7 @@ export default function CategoryCard({ category }: Props) {
 
   return (
     <Link
-      href={`/kategorier/${category.id}`}
+      href={`/arrangementer?category=${category.id}`}
       className="group block border border-border bg-white hover:border-accent/30 transition-all duration-300"
     >
       <div className="relative h-32 overflow-hidden bg-navy">
@@ -28,7 +28,9 @@ export default function CategoryCard({ category }: Props) {
             <div className="absolute inset-0 bg-gradient-to-t from-navy/55 via-navy/15 to-transparent" />
           </>
         ) : (
-          <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`} />
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${category.gradient}`}
+          />
         )}
         <div className="absolute left-4 bottom-4 h-px w-10 bg-warm/70 transition-all duration-300 group-hover:w-16 group-hover:bg-accent" />
       </div>

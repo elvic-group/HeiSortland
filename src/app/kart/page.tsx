@@ -1,11 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { events, formatDate } from "@/data/sample";
 import { usePlaces } from "@/hooks/usePlaces";
+import { mapDbEventToEventData } from "@/lib/map-db";
 import { SkeletonGrid } from "@/components/Skeleton";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+// Lazy-load the map to avoid SSR issues with Leaflet
+const MapView = dynamic(() => import("@/components/MapView"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full min-h-[400px] bg-navy border border-border flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-6 h-6 border-2 border-warm/20 border-t-warm/50 rounded-full animate-spin" />
+        <p className="text-sm font-mono text-warm/50">Laster kart…</p>
+      </div>
+    </div>
+  ),
+});
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -74,6 +89,10 @@ export default function KartPage() {
   } = usePlaces();
 
   const approvedEvents = events.filter((e) => e.status === "approved");
+  const mappedEvents = useMemo(
+    () => approvedEvents.map((e) => ({ ...e })), // use sample data as-is
+    [approvedEvents],
+  );
 
   return (
     <div className="min-h-screen bg-warm">
@@ -148,7 +167,7 @@ export default function KartPage() {
               {/* Event list */}
               {activeTab === "events" && (
                 <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
-                  {approvedEvents.map((event) => (
+                  {mappedEvents.map((event) => (
                     <motion.div
                       key={event.id}
                       variants={fadeUp}
@@ -250,7 +269,7 @@ export default function KartPage() {
             </motion.div>
           </div>
 
-          {/* Right panel – map placeholder */}
+          {/* Right panel – real interactive map */}
           <div className="lg:col-span-2">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -261,59 +280,12 @@ export default function KartPage() {
                 delay: 0.1,
               }}
             >
-              <div className="relative bg-gradient-to-br from-navy via-deep-blue to-navy aspect-[4/3] lg:aspect-[16/10] flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 opacity-[0.03]">
-                  <div className="absolute top-1/3 left-1/3 w-64 h-64 rounded-full bg-white blur-3xl" />
-                  <div className="absolute bottom-1/3 right-1/4 w-48 h-48 rounded-full bg-accent blur-3xl" />
-                </div>
-
-                {/* Decorative grid lines */}
-                <div className="absolute inset-0 opacity-[0.06]">
-                  <div
-                    className="w-full h-full"
-                    style={{
-                      backgroundImage: `linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)`,
-                      backgroundSize: "60px 60px",
-                    }}
-                  />
-                </div>
-
-                {/* Decorative map markers */}
-                <div className="absolute top-1/4 left-1/4 h-2.5 w-2.5 rounded-full border border-warm/20 bg-warm/10" />
-                <div className="absolute top-1/2 right-1/3 h-2 w-2 rounded-full border border-accent/25 bg-accent/10" />
-                <div className="absolute bottom-1/3 left-1/2 h-3 w-3 rounded-full border border-warm/20 bg-warm/10" />
-
-                <div className="relative text-center px-6">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full border border-warm/20 flex items-center justify-center">
-                    <svg
-                      width="28"
-                      height="28"
-                      viewBox="0 0 28 28"
-                      fill="none"
-                      className="text-warm/50"
-                    >
-                      <path
-                        d="M14 4C9 4 5 8 5 13C5 19 14 26 14 26C14 26 23 19 23 13C23 8 19 4 14 4Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <circle
-                        cx="14"
-                        cy="13"
-                        r="3"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                    </svg>
-                  </div>
-                  <p className="font-serif text-2xl text-warm/80">
-                    Kart kommer snart
-                  </p>
-                  <p className="text-sm text-warm/40 mt-2 max-w-xs mx-auto">
-                    Vi jobber med å integrere et interaktivt kart. Snart kan du
-                    se alle arrangementer og steder direkte på kartet.
-                  </p>
-                </div>
+              <div className="aspect-[4/3] lg:aspect-[16/10]">
+                <MapView
+                  events={mappedEvents}
+                  places={dbPlaces}
+                  activeTab={activeTab}
+                />
               </div>
 
               {/* Legend / pins */}
@@ -325,25 +297,6 @@ export default function KartPage() {
                 <div className="flex items-center gap-2 text-xs text-muted">
                   <span className="w-3 h-3 rounded-full bg-sage" />
                   Steder / møteplasser
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted">
-                  <span className="w-3 h-3 rounded-full bg-navy" />
-                  Kommunale tilbud
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    className="text-accent"
-                  >
-                    <path
-                      d="M6 0C4.5 0 3 1.5 3 3C3 5 6 8.5 6 8.5C6 8.5 9 5 9 3C9 1.5 7.5 0 6 0Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  Gratis arrangementer
                 </div>
               </div>
 

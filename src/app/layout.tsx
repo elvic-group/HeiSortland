@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { cookies } from "next/headers";
+import { routing } from "@/i18n/routing";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
@@ -38,19 +41,40 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read locale from cookie (set by LanguageSwitcher), default to "no"
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get("NEXT_LOCALE")?.value;
+  const locale =
+    cookieLocale && routing.locales.includes(cookieLocale as "no" | "en")
+      ? cookieLocale
+      : routing.defaultLocale;
+
+  let messages;
+  try {
+    messages = (await import(`../../messages/${locale}.json`)).default;
+  } catch {
+    messages = (await import("../../messages/no.json")).default;
+  }
+
   return (
-    <html lang="nb">
+    <html lang={locale === "en" ? "en" : "nb"}>
       <body className="min-h-screen">
-        <AuthProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </AuthProvider>
+        <NextIntlClientProvider
+          messages={messages}
+          locale={locale}
+          timeZone="Europe/Oslo"
+        >
+          <AuthProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </AuthProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

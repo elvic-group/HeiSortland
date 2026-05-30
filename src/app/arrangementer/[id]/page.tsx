@@ -8,6 +8,7 @@ import { useEvent } from "@/hooks/useEvents";
 import { eventHeroImages } from "@/data/images";
 import { mapDbEventToEventData, formatDate } from "@/lib/map-db";
 import { PageSkeleton } from "@/components/Skeleton";
+import SaveButton from "@/components/SaveButton";
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -494,9 +495,9 @@ export default function EventDetailPage() {
                 <button className="w-full px-5 py-3 bg-ink text-warm text-xs font-mono uppercase tracking-widest hover:bg-ink/90 transition-colors duration-300">
                   Legg til i kalender
                 </button>
-                <button className="w-full px-5 py-3 border border-border bg-white text-ink text-xs font-mono uppercase tracking-widest hover:border-muted transition-colors duration-300">
-                  Lagre arrangement
-                </button>
+                <div className="w-full px-5 py-3 border border-border bg-white text-ink hover:border-muted transition-colors duration-300 flex items-center justify-center">
+                  <SaveButton eventId={event.id} size="md" />
+                </div>
                 <button className="w-full text-center text-xs font-mono uppercase tracking-wider text-muted hover:text-ink transition-colors duration-300 pt-2">
                   Meld feil
                 </button>

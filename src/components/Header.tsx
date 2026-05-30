@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
+import LanguageSwitcher from "@/i18n/LanguageSwitcher";
 
 const navLinks = [
   { label: "Hva skjer", href: "/arrangementer" },
@@ -81,6 +82,9 @@ export default function Header() {
               </Link>
             </li>
           ))}
+          <li>
+            <LanguageSwitcher />
+          </li>
           <li>
             <Link
               href="/legg-til"

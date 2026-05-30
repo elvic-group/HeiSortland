@@ -7,6 +7,7 @@ import EventCard from "@/components/EventCard";
 import SearchBar from "@/components/SearchBar";
 import FilterChips from "@/components/FilterChips";
 import EmptyState from "@/components/EmptyState";
+import CalendarView from "@/components/CalendarView";
 import { PageSkeleton, SkeletonCard } from "@/components/Skeleton";
 import { useEvents } from "@/hooks/useEvents";
 import { useCategories } from "@/hooks/useCategories";
@@ -27,6 +28,7 @@ const tabs = [
 ] as const;
 
 type TabId = (typeof tabs)[number]["id"];
+type ViewMode = "list" | "calendar";
 
 function ArrangementerContent() {
   const searchParams = useSearchParams();
@@ -50,6 +52,8 @@ function ArrangementerContent() {
   );
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState(urlSearch);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [calendarDate, setCalendarDate] = useState<Date | null>(null);
 
   // Sync URL search param to local state on navigation
   useEffect(() => {
@@ -135,6 +139,10 @@ function ArrangementerContent() {
     setActiveCategory(id);
   };
 
+  const handleCalendarSelect = (date: Date | null) => {
+    setCalendarDate(date);
+  };
+
   const isLoading = eventsLoading || categoriesLoading;
 
   // ── Loading state ──
@@ -215,144 +223,255 @@ function ArrangementerContent() {
           >
             <SearchBar />
           </motion.div>
-        </div>
-      </section>
 
-      {/* ── Filters Section ── */}
-      <section className="max-w-7xl mx-auto px-5 sm:px-8 pt-8 pb-4">
-        {/* Tab Navigation */}
-        <div className="flex gap-1 border-b border-border pb-0 overflow-x-auto scrollbar-none">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative px-5 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors duration-300 ${
-                  isActive
-                    ? "text-warm"
-                    : "text-muted hover:text-ink border-transparent"
-                }`}
-              >
-                {isActive && (
-                  <motion.span
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-ink"
-                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
-                  />
-                )}
-                <span className="relative z-10">{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Quick Filter Chips */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.25 }}
-          className="mt-6"
-        >
-          <FilterChips
-            activeFilter={activeQuickFilter}
-            onFilter={handleQuickFilter}
-          />
-        </motion.div>
-
-        {/* Category Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-          className="mt-5 overflow-x-auto scrollbar-none -mx-5 sm:-mx-8 px-5 sm:px-8"
-        >
-          <div className="flex gap-2 pb-2 min-w-max">
+          {/* View mode toggle — List / Calendar */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: 0.22 }}
+            className="mt-6 flex gap-1"
+          >
             <button
-              onClick={() => handleCategoryFilter("all")}
-              className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 whitespace-nowrap ${
-                activeCategory === "all"
+              onClick={() => setViewMode("list")}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 ${
+                viewMode === "list"
                   ? "bg-ink text-warm border-ink"
                   : "bg-transparent text-muted border-border hover:border-muted hover:text-ink"
               }`}
             >
-              Alle kategorier
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <rect
+                  x="1"
+                  y="1"
+                  width="4"
+                  height="4"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+                <rect
+                  x="7"
+                  y="1"
+                  width="4"
+                  height="4"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+                <rect
+                  x="1"
+                  y="7"
+                  width="4"
+                  height="4"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+                <rect
+                  x="7"
+                  y="7"
+                  width="4"
+                  height="4"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+              </svg>
+              Liste
             </button>
-            {dbCategories.map((cat: any) => {
-              const isActive = activeCategory === cat.id;
+            <button
+              onClick={() => setViewMode("calendar")}
+              className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 ${
+                viewMode === "calendar"
+                  ? "bg-ink text-warm border-ink"
+                  : "bg-transparent text-muted border-border hover:border-muted hover:text-ink"
+              }`}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <rect
+                  x="1"
+                  y="2"
+                  width="10"
+                  height="9"
+                  rx="1"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+                <path d="M1 5H11" stroke="currentColor" strokeWidth="1" />
+                <path
+                  d="M3.5 1V3"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M8.5 1V3"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                />
+              </svg>
+              Kalender
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Filters Section (only shown in list mode) ── */}
+      {viewMode === "list" && (
+        <section className="max-w-7xl mx-auto px-5 sm:px-8 pt-8 pb-4">
+          {/* Tab Navigation */}
+          <div className="flex gap-1 border-b border-border pb-0 overflow-x-auto scrollbar-none">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
               return (
                 <button
-                  key={cat.id}
-                  onClick={() => handleCategoryFilter(cat.id)}
-                  className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 whitespace-nowrap ${
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative px-5 py-3 text-xs font-mono uppercase tracking-widest whitespace-nowrap transition-colors duration-300 ${
                     isActive
-                      ? "bg-ink text-warm border-ink"
-                      : "bg-transparent text-muted border-border hover:border-muted hover:text-ink"
+                      ? "text-warm"
+                      : "text-muted hover:text-ink border-transparent"
                   }`}
                 >
-                  {cat.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeTab"
+                      className="absolute inset-0 bg-ink"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 35,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-10">{tab.label}</span>
                 </button>
               );
             })}
           </div>
-        </motion.div>
 
-        {/* Results Count */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.35 }}
-          className="mt-8 text-sm text-muted font-mono"
-        >
-          Viser <span className="text-ink">{filteredEvents.length}</span>{" "}
-          arrangement{filteredEvents.length === 1 ? "" : "er"}
-        </motion.p>
-      </section>
+          {/* Quick Filter Chips */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25 }}
+            className="mt-6"
+          >
+            <FilterChips
+              activeFilter={activeQuickFilter}
+              onFilter={handleQuickFilter}
+            />
+          </motion.div>
 
-      {/* ── Event Grid ── */}
+          {/* Category Filter */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="mt-5 overflow-x-auto scrollbar-none -mx-5 sm:-mx-8 px-5 sm:px-8"
+          >
+            <div className="flex gap-2 pb-2 min-w-max">
+              <button
+                onClick={() => handleCategoryFilter("all")}
+                className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 whitespace-nowrap ${
+                  activeCategory === "all"
+                    ? "bg-ink text-warm border-ink"
+                    : "bg-transparent text-muted border-border hover:border-muted hover:text-ink"
+                }`}
+              >
+                Alle kategorier
+              </button>
+              {dbCategories.map((cat: any) => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleCategoryFilter(cat.id)}
+                    className={`px-4 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 whitespace-nowrap ${
+                      isActive
+                        ? "bg-ink text-warm border-ink"
+                        : "bg-transparent text-muted border-border hover:border-muted hover:text-ink"
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* Results Count */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.35 }}
+            className="mt-8 text-sm text-muted font-mono"
+          >
+            Viser <span className="text-ink">{filteredEvents.length}</span>{" "}
+            arrangement{filteredEvents.length === 1 ? "" : "er"}
+          </motion.p>
+        </section>
+      )}
+
+      {/* ── Content Area ── */}
       <section className="max-w-7xl mx-auto px-5 sm:px-8 pb-24 pt-4">
-        <AnimatePresence mode="wait">
-          {filteredEvents.length > 0 ? (
-            <motion.div
-              key={activeTab + activeQuickFilter + activeCategory + searchQuery}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-            >
-              {filteredEvents.map((event, index) => (
-                <motion.div
-                  key={event.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.4,
-                    delay: index * 0.04,
-                    ease: "easeOut",
-                  }}
-                >
-                  <EventCard event={event} />
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="empty"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <EmptyState
-                title="Fant ingen arrangementer"
-                description="Prøv å endre filteret, juster søket, eller se om det er flere arrangementer senere."
-                actionLabel="Se alle arrangementer"
-                actionHref="/arrangementer"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {viewMode === "calendar" ? (
+          /* ── Calendar View ── */
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <CalendarView
+              events={filteredEvents}
+              selectedDate={calendarDate}
+              onSelectDate={handleCalendarSelect}
+            />
+          </motion.div>
+        ) : (
+          /* ── List/Grid View ── */
+          <AnimatePresence mode="wait">
+            {filteredEvents.length > 0 ? (
+              <motion.div
+                key={
+                  activeTab + activeQuickFilter + activeCategory + searchQuery
+                }
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+              >
+                {filteredEvents.map((event, index) => (
+                  <motion.div
+                    key={event.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: index * 0.04,
+                      ease: "easeOut",
+                    }}
+                  >
+                    <EventCard event={event} />
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <EmptyState
+                  title="Fant ingen arrangementer"
+                  description="Prøv å endre filteret, juster søket, eller se om det er flere arrangementer senere."
+                  actionLabel="Se alle arrangementer"
+                  actionHref="/arrangementer"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </section>
     </div>
   );

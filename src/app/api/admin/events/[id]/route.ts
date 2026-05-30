@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { sendApprovalEmail } from "@/lib/email";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const supabase = await createClient();
 
@@ -30,6 +31,24 @@ export async function PATCH(
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  // Send email notification if status changed to approved or rejected
+  if (status === "approved" || status === "rejected") {
+    try {
+      const { data: event } = await supabase
+        .from("events")
+        .select("title, organizer_email")
+        .eq("id", id)
+        .single();
+
+      if (event?.organizer_email) {
+        await sendApprovalEmail(event.organizer_email, event.title, status);
+      }
+    } catch (emailError) {
+      // Don't fail the request if email sending fails
+      console.error("[admin] Failed to send notification email:", emailError);
+    }
   }
 
   return NextResponse.json({ success: true });
