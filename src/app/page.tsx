@@ -137,9 +137,9 @@ export default function Home() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-navy/55" />
-        <div className="absolute inset-0 bg-gradient-to-r from-navy/85 via-navy/55 to-navy/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-navy/25" />
+        <div className="absolute inset-0 bg-gradient-to-r from-navy/70 via-navy/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-navy/40 via-transparent to-transparent" />
 
         {/* Decorative background shapes */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
