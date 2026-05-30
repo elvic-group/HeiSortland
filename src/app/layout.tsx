@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { cookies } from "next/headers";
+import { Analytics } from "@vercel/analytics/react";
 import { routing } from "@/i18n/routing";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -70,9 +71,16 @@ export default async function RootLayout({
           timeZone="Europe/Oslo"
         >
           <AuthProvider>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-3 focus:bg-accent focus:text-warm focus:text-sm focus:font-semibold focus:outline-none"
+            >
+              Hopp til hovedinnhold
+            </a>
             <Header />
-            <main>{children}</main>
+            <main id="main-content">{children}</main>
             <Footer />
+            <Analytics />
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

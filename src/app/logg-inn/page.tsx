@@ -91,6 +91,15 @@ function LoginForm() {
           >
             {submitting ? "Logger inn…" : "Logg inn"}
           </button>
+
+          <div className="text-center">
+            <Link
+              href="/tilbakestill-passord"
+              className="text-xs text-muted hover:text-ink underline underline-offset-4 transition-colors"
+            >
+              Glemt passord?
+            </Link>
+          </div>
         </form>
       </motion.div>
     </div>

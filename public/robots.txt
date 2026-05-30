@@ -1,0 +1,13 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /logg-inn
+Disallow: /registrer
+
+# Host
+Host: https://heisortland.vercel.app
+
+# Sitemaps
+Sitemap: https://heisortland.vercel.app/sitemap.xml

@@ -467,6 +467,7 @@ export default function Home() {
           >
             <input
               type="email"
+              aria-label="E-postadresse for nyhetsbrev"
               placeholder="din@epost.no"
               className="flex-1 px-5 py-4 bg-white/5 border border-white/10 text-warm placeholder:text-white/20 text-sm focus:outline-none focus:border-white/30 transition-colors"
             />

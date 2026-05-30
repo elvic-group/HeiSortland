@@ -111,8 +111,51 @@ export default function EventDetailPage() {
 
   const event = mapDbEventToEventData(dbEvent);
 
+  // ── Build JSON-LD structured data ──
+  const buildIsoDate = (dateStr: string, timeStr: string): string => {
+    const [h, m] = timeStr.split(":").map(Number);
+    const d = new Date(dateStr + "T12:00:00");
+    d.setHours(h || 0, m || 0, 0, 0);
+    return d.toISOString();
+  };
+
+  const eventStatusMap: Record<string, string> = {
+    published: "https://schema.org/EventScheduled",
+    cancelled: "https://schema.org/EventCancelled",
+    postponed: "https://schema.org/EventPostponed",
+    rescheduled: "https://schema.org/EventRescheduled",
+  };
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    description: event.description,
+    startDate: buildIsoDate(event.date, event.startTime),
+    endDate: buildIsoDate(event.endDate || event.date, event.endTime),
+    eventStatus:
+      eventStatusMap[event.status] || "https://schema.org/EventScheduled",
+    isAccessibleForFree: event.isFree,
+    location: {
+      "@type": "Place",
+      name: event.location,
+      address: event.address || event.location,
+    },
+    organizer: {
+      "@type": "Organization",
+      name: event.organizerName,
+    },
+    ...(event.image && { image: event.image }),
+    ...(event.website && { url: event.website }),
+  };
+
   return (
     <div className="min-h-screen bg-warm">
+      {/* Structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ── Back Link ── */}
       <div className="max-w-6xl mx-auto px-5 sm:px-8 pt-6">
         <Link
@@ -352,9 +395,9 @@ export default function EventDetailPage() {
             <div className="border border-border bg-white p-6 sm:p-8 sticky top-6">
               {/* Date & Time */}
               <div className="pb-6 border-b border-border">
-                <h3 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
                   Dato og tid
-                </h3>
+                </h4>
                 <p className="text-ink font-medium">{formatDate(event.date)}</p>
                 <p className="text-sm text-muted mt-0.5">
                   {event.startTime}–{event.endTime}
@@ -368,18 +411,18 @@ export default function EventDetailPage() {
 
               {/* Location */}
               <div className="py-6 border-b border-border">
-                <h3 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
                   Sted
-                </h3>
+                </h4>
                 <p className="text-ink font-medium">{event.location}</p>
                 <p className="text-sm text-muted mt-0.5">{event.address}</p>
               </div>
 
               {/* Price */}
               <div className="py-6 border-b border-border">
-                <h3 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
                   Pris
-                </h3>
+                </h4>
                 {event.isFree ? (
                   <p className="text-sage font-mono text-sm uppercase tracking-wider">
                     Gratis
@@ -391,9 +434,9 @@ export default function EventDetailPage() {
 
               {/* Organizer */}
               <div className="py-6 border-b border-border">
-                <h3 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
                   Arrangør
-                </h3>
+                </h4>
                 <p className="text-ink font-medium">{event.organizerName}</p>
                 {event.organizerEmail && (
                   <p className="text-sm text-muted mt-1">
@@ -417,11 +460,14 @@ export default function EventDetailPage() {
 
               {/* Share */}
               <div className="py-6 border-b border-border">
-                <h3 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
+                <h4 className="text-xs font-mono text-muted uppercase tracking-wider mb-3">
                   Del
-                </h3>
+                </h4>
                 <div className="flex gap-2">
-                  <button className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-ink hover:border-muted transition-all duration-300">
+                  <button
+                    aria-label="Kopier lenke"
+                    className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-ink hover:border-muted transition-all duration-300"
+                  >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path
                         d="M8 1L8 11M8 1L5 4M8 1L11 4"
@@ -438,7 +484,10 @@ export default function EventDetailPage() {
                       />
                     </svg>
                   </button>
-                  <button className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#1877F2] hover:border-[#1877F2]/30 transition-all duration-300">
+                  <button
+                    aria-label="Del på Facebook"
+                    className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#1877F2] hover:border-[#1877F2]/30 transition-all duration-300"
+                  >
                     <svg
                       width="16"
                       height="16"
@@ -448,7 +497,10 @@ export default function EventDetailPage() {
                       <path d="M9 5.5V3.5C9 2.7 9.7 2 10.5 2H12V0H9.5C7.6 0 6 1.6 6 3.5V5.5H4V8H6V16H9V8H11.5L12 5.5H9Z" />
                     </svg>
                   </button>
-                  <button className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#00B2FF] hover:border-[#00B2FF]/30 transition-all duration-300">
+                  <button
+                    aria-label="Del på Twitter"
+                    className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#00B2FF] hover:border-[#00B2FF]/30 transition-all duration-300"
+                  >
                     <svg
                       width="16"
                       height="16"
@@ -458,7 +510,10 @@ export default function EventDetailPage() {
                       <path d="M8 0C3.6 0 0 3.1 0 7C0 9.4 1.2 11.5 3.1 12.9L2 16L5.3 14.3C6.2 14.6 7.1 14.7 8 14.7C12.4 14.7 16 11.6 16 7C16 3.1 12.4 0 8 0ZM8 12.5C6.5 12.5 5.1 12.1 3.9 11.3L2.5 12L3.1 10.7L3.2 10.6C2.4 9.5 1.9 8.3 1.9 7C1.9 4.2 4.6 1.9 8 1.9C11.4 1.9 14.1 4.2 14.1 7C14.1 9.8 11.4 12.5 8 12.5Z" />
                     </svg>
                   </button>
-                  <button className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#25D366] hover:border-[#25D366]/30 transition-all duration-300">
+                  <button
+                    aria-label="Del på WhatsApp"
+                    className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-[#25D366] hover:border-[#25D366]/30 transition-all duration-300"
+                  >
                     <svg
                       width="16"
                       height="16"
@@ -468,7 +523,10 @@ export default function EventDetailPage() {
                       <path d="M8 0C3.6 0 0 3.6 0 8C0 9.8 0.6 11.5 1.7 12.9L1 16L4.6 14.7C6 15.5 7.5 16 9 16C13.4 16 17 12.4 17 8C17 3.6 12.4 0 8 0ZM11.2 10.9C11 11.4 10.3 11.8 9.8 11.9C9.5 12 9.1 12.1 7.5 11.3C5.6 10.3 4.4 8.3 4.2 8C4 7.7 3.5 7 3.5 6.3C3.5 5.6 3.8 5.3 4 5C4.2 4.8 4.4 4.7 4.5 4.7H5C5.1 4.7 5.2 4.7 5.3 4.9C5.5 5.1 5.8 5.9 5.8 5.9C5.9 6 5.9 6.2 5.8 6.3C5.7 6.5 5.6 6.6 5.5 6.7C5.4 6.8 5.3 6.9 5.4 7.1C5.5 7.3 5.9 8 6.5 8.5C7.1 9 7.6 9.2 7.9 9.3C8.1 9.4 8.3 9.3 8.4 9.2C8.6 9 8.8 8.7 9 8.5C9.1 8.3 9.3 8.3 9.5 8.4L11 9.1C11.2 9.2 11.3 9.3 11.4 9.4C11.4 9.6 11.3 10.5 11.2 10.9Z" />
                     </svg>
                   </button>
-                  <button className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-ink hover:border-muted transition-all duration-300">
+                  <button
+                    aria-label="Del via andre tjenester"
+                    className="w-9 h-9 flex items-center justify-center border border-border text-muted hover:text-ink hover:border-muted transition-all duration-300"
+                  >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <rect
                         x="2"
