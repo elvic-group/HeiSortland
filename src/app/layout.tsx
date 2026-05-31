@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { cookies } from "next/headers";
+import { getLocale, getMessages } from "next-intl/server";
 import { Analytics } from "@vercel/analytics/react";
-import { routing } from "@/i18n/routing";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
@@ -48,20 +47,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Read locale from cookie (set by LanguageSwitcher), default to "no"
-  const cookieStore = await cookies();
-  const cookieLocale = cookieStore.get("NEXT_LOCALE")?.value;
-  const locale =
-    cookieLocale && routing.locales.includes(cookieLocale as "no" | "en")
-      ? cookieLocale
-      : routing.defaultLocale;
-
-  let messages;
-  try {
-    messages = (await import(`../../messages/${locale}.json`)).default;
-  } catch {
-    messages = (await import("../../messages/no.json")).default;
-  }
+  const locale = await getLocale();
+  const messages = await getMessages();
 
   return (
     <html lang={locale === "en" ? "en" : "nb"}>

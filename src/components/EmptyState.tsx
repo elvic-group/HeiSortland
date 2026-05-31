@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function EmptyState({
-  title = "Ingenting her ennå",
-  description = "Prøv å endre filteret eller søket ditt.",
+  title,
+  description,
   actionLabel,
   actionHref,
 }: {
@@ -11,6 +14,10 @@ export default function EmptyState({
   actionLabel?: string;
   actionHref?: string;
 }) {
+  const t = useTranslations("emptyState");
+  const resolvedTitle = title ?? t("defaultTitle");
+  const resolvedDescription = description ?? t("defaultDescription");
+
   return (
     <div className="py-10 md:py-12 text-center">
       <div className="w-12 h-12 mx-auto mb-5 rounded-full bg-border/40 flex items-center justify-center">
@@ -38,8 +45,12 @@ export default function EmptyState({
           />
         </svg>
       </div>
-      <h3 className="font-serif text-xl md:text-2xl text-ink mb-2">{title}</h3>
-      <p className="text-muted text-sm max-w-sm mx-auto">{description}</p>
+      <h3 className="font-serif text-xl md:text-2xl text-ink mb-2">
+        {resolvedTitle}
+      </h3>
+      <p className="text-muted text-sm max-w-sm mx-auto">
+        {resolvedDescription}
+      </p>
       {actionLabel && actionHref && (
         <Link
           href={actionHref}

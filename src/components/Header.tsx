@@ -83,7 +83,7 @@ export default function Header() {
             </li>
           ))}
           <li>
-            <LanguageSwitcher />
+            <LanguageSwitcher scrolled={isLightHeader} />
           </li>
           <li>
             <Link

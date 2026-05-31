@@ -1,36 +1,43 @@
-import Link from "next/link";
+"use client";
 
-const footerLinks = [
-  {
-    title: "Utforsk",
-    items: [
-      { label: "Utforsk", href: "/arrangementer" },
-      { label: "Kategorier", href: "/kategorier" },
-      { label: "Steder", href: "/steder" },
-      { label: "Kart", href: "/kart" },
-    ],
-  },
-  {
-    title: "For deg",
-    items: [
-      { label: "Ny i Sortland", href: "/ny-i-sortland" },
-      { label: "For arrangører", href: "/arrangor" },
-      { label: "Min side", href: "/min-side" },
-      { label: "Legg inn arrangement", href: "/legg-til" },
-    ],
-  },
-  {
-    title: "Om",
-    items: [
-      { label: "Kontakt oss", href: "#" },
-      { label: "Personvern", href: "#" },
-      { label: "Bruksvilkår", href: "#" },
-      { label: "For kommuner", href: "#" },
-    ],
-  },
-];
+import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const t = useTranslations();
+  const n = useTranslations("nav");
+  const f = useTranslations("footer");
+
+  const footerLinks = [
+    {
+      title: f("explore"),
+      items: [
+        { label: n("events"), href: "/arrangementer" },
+        { label: n("categories"), href: "/kategorier" },
+        { label: n("places"), href: "/steder" },
+        { label: n("map"), href: "/kart" },
+      ],
+    },
+    {
+      title: f("forYou"),
+      items: [
+        { label: n("newInSortland"), href: "/ny-i-sortland" },
+        { label: n("forOrganizers"), href: "/arrangor" },
+        { label: n("myPage"), href: "/min-side" },
+        { label: n("addEventFull"), href: "/legg-til" },
+      ],
+    },
+    {
+      title: f("about"),
+      items: [
+        { label: f("contact"), href: "#" },
+        { label: f("privacy"), href: "#" },
+        { label: f("terms"), href: "#" },
+        { label: f("forMunicipalities"), href: "#" },
+      ],
+    },
+  ];
+
   return (
     <footer className="bg-navy border-t border-white/10">
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-20">
@@ -43,8 +50,7 @@ export default function Footer() {
               Hei<span className="text-accent">.</span> Sortland
             </Link>
             <p className="mt-4 text-white/70 text-sm leading-relaxed max-w-xs">
-              Finn det som skjer i Sortland. Arrangementer, aktiviteter,
-              møteplasser og lokale tilbud – samlet på ett sted.
+              {f("tagline")}
             </p>
           </div>
 
@@ -71,11 +77,9 @@ export default function Footer() {
 
         <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/40 text-xs">
-            &copy; {new Date().getFullYear()} Hei Sortland
+            &copy; {new Date().getFullYear()} {f("copyright")}
           </p>
-          <p className="text-white/40 text-xs font-mono">
-            Med &hearts; fra Vesterålen
-          </p>
+          <p className="text-white/40 text-xs font-mono">{f("madeWithLove")}</p>
         </div>
       </div>
     </footer>

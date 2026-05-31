@@ -1,6 +1,21 @@
 "use client";
 
 import { quickFilters } from "@/data/sample";
+import { useTranslations } from "next-intl";
+
+/** Maps quickFilter IDs to translation keys in the "filters" namespace */
+const filterKeyMap: Record<string, string> = {
+  today: "today",
+  weekend: "weekend",
+  free: "free",
+  barn: "kids",
+  ungdom: "youth",
+  musikk: "music",
+  kultur: "culture",
+  sport: "sport",
+  frivillig: "volunteer",
+  kurs: "course",
+};
 
 interface Props {
   activeFilter: string | null;
@@ -8,10 +23,13 @@ interface Props {
 }
 
 export default function FilterChips({ activeFilter, onFilter }: Props) {
+  const t = useTranslations("filters");
+
   return (
     <div className="flex flex-wrap gap-2">
       {quickFilters.map((f) => {
         const isActive = activeFilter === f.id;
+        const label = t(filterKeyMap[f.id] ?? f.id);
         return (
           <button
             key={f.id}
@@ -23,7 +41,7 @@ export default function FilterChips({ activeFilter, onFilter }: Props) {
                 : "bg-transparent text-muted border-border hover:border-muted hover:text-ink"
             }`}
           >
-            {f.label}
+            {label}
           </button>
         );
       })}

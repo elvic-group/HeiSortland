@@ -2,16 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export default function SearchBar({
-  placeholder = "Søk etter konsert, kurs, barn, sport, kafé, møteplass…",
+  placeholder,
   large = false,
 }: {
   placeholder?: string;
   large?: boolean;
 }) {
+  const t = useTranslations("home");
   const [query, setQuery] = useState("");
   const router = useRouter();
+  const resolvedPlaceholder = placeholder ?? t("searchPlaceholder");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +27,7 @@ export default function SearchBar({
     <form onSubmit={handleSubmit} className="relative w-full">
       <input
         type="text"
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className={`w-full bg-white border border-border text-ink placeholder:text-muted/60 focus:outline-none focus:border-ink transition-colors duration-300 ${

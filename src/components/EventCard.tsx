@@ -3,12 +3,14 @@ import { eventImages } from "@/data/images";
 import Image from "next/image";
 import Link from "next/link";
 import SaveButton from "@/components/SaveButton";
+import { useTranslations } from "next-intl";
 
 interface Props {
   event: EventData;
 }
 
 export default function EventCard({ event }: Props) {
+  const t = useTranslations("events");
   const imgSrc = event.image?.startsWith("http")
     ? event.image
     : eventImages[event.id];
@@ -39,12 +41,12 @@ export default function EventCard({ event }: Props) {
             </span>
             {event.isFree && (
               <span className="bg-sage text-warm text-xs px-2.5 py-1">
-                Gratis
+                {t("free")}
               </span>
             )}
             {event.featured && !event.isFree && (
               <span className="bg-accent text-warm text-xs px-2.5 py-1">
-                Anbefalt
+                {t("featured")}
               </span>
             )}
           </div>
